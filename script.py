@@ -13,8 +13,9 @@ def update_parser(parser: argparse.ArgumentParser):
     parser.add_argument("--background", type=str, required=True)
     parser.add_argument("--mask", type=str, default="")
     parser.add_argument("--out", type=str, default="")
-    parser.add_argument("--x", type=int, default=200)
-    parser.add_argument("--y", type=int, default=200)
+    parser.add_argument("--x", type=int, default=0)
+    parser.add_argument("--y", type=int, default=0)
+    parser.add_argument("--foreground_scale", type=float, default=1.)
     return parser
 
 
@@ -32,8 +33,12 @@ if __name__ == "__main__":
         mask = np.where(mask > 5, 1, 0)
     else:
         mask = createMask.main(cfg.foreground)
-    targetImg = np.array(Image.open(cfg.background.encode()).convert('RGB'))
+
     sourceImg = np.array(Image.open(cfg.foreground.encode()).convert('RGB'))
+    mask = cv2.resize(mask, None, fx=cfg.foreground_scale, fy=cfg.foreground_scale, interpolation=cv2.INTER_NEAREST)
+    sourceImg = cv2.resize(sourceImg, None, fx=cfg.foreground_scale, fy=cfg.foreground_scale, interpolation=cv2.INTER_CUBIC)
+
+    targetImg = np.array(Image.open(cfg.background.encode()).convert('RGB'))
     resultImg = seamlessCloningPoisson(sourceImg, targetImg, mask, cfg.x, cfg.y)
     if cfg.out:
         plt.imsave(cfg.out)
