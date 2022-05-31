@@ -16,6 +16,7 @@ def update_parser(parser: argparse.ArgumentParser):
     parser.add_argument("--x", type=int, default=0)
     parser.add_argument("--y", type=int, default=0)
     parser.add_argument("--foreground_scale", type=float, default=1.)
+    parser.add_argument("--background_scale", type=float, default=1.)
     return parser
 
 
@@ -54,6 +55,7 @@ def main():
     sourceImg, mask = crop_foreground(sourceImg, mask)
 
     targetImg = np.array(Image.open(cfg.background.encode()).convert('RGB'))
+    targetImg = cv2.resize(targetImg, None, fx=cfg.background_scale, fy=cfg.background_scale, interpolation=cv2.INTER_CUBIC)
     resultImg = seamlessCloningPoisson(sourceImg, targetImg, mask, cfg.x, cfg.y)
     if cfg.out:
         plt.imsave(cfg.out)
