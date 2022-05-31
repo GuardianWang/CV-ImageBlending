@@ -58,7 +58,7 @@ def main():
     targetImg = cv2.resize(targetImg, None, fx=cfg.background_scale, fy=cfg.background_scale, interpolation=cv2.INTER_CUBIC)
     resultImg = seamlessCloningPoisson(sourceImg, targetImg, mask, cfg.x, cfg.y)
     if cfg.out:
-        plt.imsave(cfg.out)
+        plt.imsave(cfg.out, resultImg)
     plt.imshow(resultImg)
     plt.show()
 
